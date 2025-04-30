@@ -1,0 +1,257 @@
+<!-- result.html -->
+<div class="row p-3 mt-3 d-flex justify-content-center">
+    <div class="d-flex justify-content-center align-items-center text-center">
+        <div class="card container-fluid" style="width: 18rem; background-color:#cce7e8;">
+            <div class="card-body">
+                <h5 class="card-title">Total Data yang Dianalisis</h5>
+                <p> {{ accident_count }} Total Data yang Dianalisis</p>
+            </div>
+        </div>
+        <div class="card container-fluid" style="width: 18rem; background-color:#cce7e8;">
+            <div class="card-body">
+                <h5 class="card-title">Jumlah Aturan yang Ditemukan</h5>
+                <p>{{ apriori_rules_total }} aturan menggunakan Algoritma Apriori</p>
+                <p>{{ fpgrowth_rules_total }} aturan menggunakan Algoritma Fp-Growth</p>
+            </div>
+        </div>
+        <div class="card container-fluid" style="width: 18rem; background-color:#cce7e8;">
+            <div class="card-body">
+                <h5 class="card-title">Aturan dengan Support Tertinggi : </h5>
+                {% for rule in top_apriori %}
+                <p><i>Algoritma Apriori :</i><br> Jika {{ rule['antecedents'] }} ,maka kemungkinan terjadi pada jalan {{ rule['consequents'] }}</p>
+                {% endfor %}
+
+                {% for rule in top_fpgrowth %}
+                <p><i>Algoritma FP-Growth :</i><br>Jika kecelakaan pada jalan {{ rule['antecedents'] }} ,maka kemungkinan {{ rule['consequents'] }}</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-12 mt-2 p-2">
+        <h5>Rules yang Sama Algoritma Apriori dan FP-Growth:</h5>
+        <table border="1" class="table-bordered table-striped">
+            <thead class="text-center">
+                <tr>
+                    <th style="background-color:#cce7e8;">No.</th>
+                    <th width = "60%" style="background-color:#cce7e8;">Deskripsi Rules</th>
+                    <th width = "10%" style="background-color:#cce7e8;">Support (Apriori)</th>
+                    <th width = "10%" style="background-color:#cce7e8;">Confidence (Apriori)</th>
+                    <th width = "10%" style="background-color:#cce7e8;">Support (FP-Growth)</th>
+                    <th width = "10%" style="background-color:#cce7e8;">Confidence (FP-Growth)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rule in common_rules %}
+                <tr>
+                    <td class="text-center">{{ loop.index }}</td>
+                    <td>{{ rule['description'] }}</td>
+                    <td>{{ rule['support_apriori'] }}</td>
+                    <td>{{ rule['confidence_apriori'] }}</td>
+                    <td>{{ rule['support_fpgrowth'] }}</td>
+                    <td>{{ rule['confidence_fpgrowth'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-12 mt-2 p-2">
+        <h5>Rules Dihasilkan Berdasarkan Faktor Kecelakaan:</h5>
+        <table border="1" class="table-bordered table-striped">
+            <thead class="text-center">
+                <tr>
+                    <th width = "10%" style="background-color:#cce7e8;"></th>
+                    <th style="background-color:#cce7e8;">Hari</th>
+                    <th style="background-color:#cce7e8;">Bulan</th>
+                    <th style="background-color:#cce7e8;">Waktu</th>
+                    <th style="background-color:#cce7e8;">Geometri Jalan</th>
+                    <th style="background-color:#cce7e8;">Pihak Terlibat</th>
+                    <th style="background-color:#cce7e8;">Tingkat Kecelakaan</th>
+                    <th style="background-color:#cce7e8;">Tingkat Kerugian</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="text-center">Apriori</td>
+                    {% for factor, count in count_factor_apriori.items() %}
+                    <td><button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modal{{ factor }}">
+                        Rules dihasilkan : {{count}}
+                    </button></td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td class="text-center">FP-Growth</td>
+                    {% for factor, count in count_factor_fpgrowth.items() %}
+                    <td><button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modal{{ factor }}">
+                        Rules dihasilkan : {{count}}
+                    </button></td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- Network Graph -->
+    <div class="col-md-6 mt-2">
+        <div class="card mb-4">
+            <div class="card-header">
+                <b>Network Graph Algoritma Apriori</b>
+            </div>
+            <div class="card-body"><center><img src="{{ url_for('static', filename='assets/img/chartGraphApriori.png') }}" alt="Bar Chart" width="500" height="400"></center></div>
+        </div>
+    </div>
+    <!-- Network Graph -->
+    <div class="col-md-6 mt-2">
+        <div class="card mb-4">
+            <div class="card-header">
+                <b>Network Graph Algoritma FP-Growth</b>
+            </div>
+            <div class="card-body"><center><img src="{{ url_for('static', filename='assets/img/chartGraphFpgrowth.png') }}" alt="Bar Chart" width="500" height="400"></center></div>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="card mb-4">
+            <div class="card-header"><b>Top 5 Rules Berdasarkan Support</b></div>
+            <div class="card-body"><center><img src="{{ url_for('static', filename='assets/img/chartbar_combined.png') }}" alt="Bar Chart" width="500" height="400"></center></div>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="card mb-4">
+            <div class="card-header"><b>Top 5 Rules Berdasarkan Confidence</b></div>
+            <div class="card-body"><center><img src="{{ url_for('static', filename='assets/img/chartbar_confidence.png') }}" alt="Bar Chart" width="520" height="400"></center></div>
+        </div>
+    </div>
+    <div class="col-12">
+        <h3>Kesimpulan Utama:</h2>
+        <ol>
+            <li>Kecelakaan di jalan lurus sering terjadi dengan tingkat kecelakaan ringan.</li>
+            <ul>
+                <li>Jalan lurus adalah lokasi yang memiliki keterkaitan tinggi dengan kecelakaan, terutama yang memiliki tingkat keparahan ringan.</li>
+            </ul>
+            <li>Kecelakaan yang melibatkan kendaraan roda dua (R2 X R2) sering terjadi di jalan lurus dengan tingkat kecelakaan ringan.</li>
+            <ul>
+                <li>Kendaraan roda dua memiliki risiko kecelakaan yang tinggi, terutama di jalan lurus.</li>
+            </ul>
+            <li>Tingkat kerugian ringan sering berhubungan dengan tingkat kecelakaan ringan dan lokasi jalan lurus.</li>
+            <ul>
+                <li>Hal ini menunjukkan bahwa mayoritas kecelakaan di jalan lurus tidak menyebabkan kerugian yang parah.</li>
+            </ul>
+        </ol>
+        <h3>Rekomendasi Tindakan:</h3>
+        <ol>
+            <li>Tingkatkan Pengawasan di Jalan Lurus:</li>
+            <ul>
+                <li>Pasang rambu-rambu tambahan, seperti rambu batas kecepatan dan peringatan bahaya.</li>
+                <li>Lakukan pengawasan menggunakan CCTV atau patroli polisi lalu lintas untuk mencegah pelanggaran.</li>
+            </ul>
+            <li>Fokus pada Kendaraan Roda Dua (R2):</li>
+            <ul>
+                <li>Edukasi pengguna kendaraan roda dua mengenai keselamatan berkendara, terutama di jalan lurus.</li>
+                <li>Sediakan jalur khusus bagi kendaraan roda dua untuk meminimalkan interaksi dengan kendaraan roda empat.</li>
+            </ul>
+            <li>Perbaiki Infrastruktur Jalan:</li>
+            <ul>
+                <li>Tambahkan marka jalan yang jelas dan median jalan untuk mencegah kecelakaan tabrak depan.</li>
+                <li>Pastikan pencahayaan di jalan lurus mencukupi, terutama pada malam hari.</li>
+            </ul>
+            <li>Optimalkan Penanganan Kecelakaan:</li>
+            <ul>
+                <li>Sediakan pos pertolongan pertama di lokasi yang sering terjadi kecelakaan di jalan lurus.</li>
+                <li>Berikan pelatihan kepada personel lapangan untuk menangani kecelakaan ringan dengan cepat.</li>
+            </ul>
+            <li>Tingkatkan Edukasi Keselamatan Berkendara:</li>
+            <ul>
+                <li>Lakukan kampanye keselamatan berkendara di daerah dengan frekuensi kecelakaan tinggi.</li>
+                <li>Libatkan komunitas kendaraan roda dua untuk menyampaikan informasi penting tentang keselamatan.</li>
+            </ul>
+            <li>Analisis Mendalam pada Tingkat Kerugian Ringan:</li>
+            <ul>
+                <li>Identifikasi faktor penyebab kerugian ringan untuk mencegah eskalasi ke tingkat yang lebih parah.</li>
+                <li>Kolaborasi dengan asuransi untuk memberikan insentif kepada pengendara yang memiliki riwayat berkendara aman.</li>
+            </ul><br>
+            <h3>Kesimpulan Akhir</h3>
+            <p>Kecelakaan dengan tingkat keparahan ringan mendominasi di jalan lurus, terutama yang melibatkan kendaraan roda dua. Tindakan pencegahan harus berfokus pada pengawasan, perbaikan infrastruktur, dan edukasi keselamatan untuk mengurangi frekuensi dan dampak kecelakaan tersebut.</p>
+        </ol>
+    </div>
+
+    <!-- Modal untuk Setiap Faktor Apriori -->
+    {% for factor, rules in rules_by_factor_apriori.items() %}
+    <div class="modal fade" id="modal{{ factor }}" tabindex="-1" aria-labelledby="modalLabel{{ factor }}" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel{{ factor }}">Tabel Rules Faktor {{ factor }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Tabel Rules -->
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Deskripsi</th>
+                                <th>Support</th>
+                                <th>Confidence</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rule in rules %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ rule['description'] }}</td>
+                                <td>{{ rule['support_apriori'] }}</td>
+                                <td>{{ rule['confidence_apriori'] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Modal untuk Setiap Faktor FP-Growth -->
+    {% for factor, rules in rules_by_factor_fpgrowth.items() %}
+    <div class="modal fade" id="modal{{ factor }}" tabindex="-1" aria-labelledby="modalLabel{{ factor }}" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel{{ factor }}">Tabel Rules Faktor {{ factor }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Tabel Rules -->
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Deskripsi</th>
+                                <th>Support</th>
+                                <th>Confidence</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rule in rules %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>{{ rule['description'] }}</td>
+                                <td>{{ rule['support_fpgrowth'] }}</td>
+                                <td>{{ rule['confidence_fpgrowth'] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+<!-- Tambahkan Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>

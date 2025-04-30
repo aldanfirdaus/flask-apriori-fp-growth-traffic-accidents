@@ -1,0 +1,37 @@
+
+<div class="col-md-12 px-4">
+    <h4 class="mt-4 text-center">Association Rules pada Data Kecelakaan Kota Surabaya</h4>
+    <div class="col">
+        <form id="uploadForm" action="/submit" enctype="multipart/form-data" method="post" class="p-2 mt-3 rounded-top" style="max-width: 40%;margin: auto;background-color:#cce7e8;">
+            <div class="p-1">
+                <input type="file" class="form-control" name="file">
+            </div>
+            <p style="font-size: small;" class="text-center"><i>*Masukkan file berformat .xlxs dengan nama 'data_kecelakaan.xlsx'</i></p>
+            <div class="p-1">
+                <input type="text" class="form-control" name="support" required placeholder="Masukkan Nilai Support">
+            </div>
+            <div class="p-1">
+                <input type="text" class="form-control" name="confident" required placeholder="Masukkan Nilai Confidence">
+            </div>
+            <div class="text-center p-1">
+                <button type="submit" style="background-color: rgb(30,129,176);color: #ffffff; " class="btn btn-block">Proses Data</button>
+            </div>
+        </form>
+        <!-- Delete Button -->
+        <form id="deleteForm" action="/delete" method="post" class="rounded-bottom shadow-5-strong mt-0 pb-2" style="max-width: 40%;margin: auto;background-color:#cce7e8;">
+            <div class="text-center pb-2 pl-2 pr-2">
+                <button type="submit" class="btn btn-danger btn-block">Hapus File Sebelumnya</button>
+            </div>
+        </form>
+        <!-- Displaying flash messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="mt-2 d-flex justify-content-center align-items-center">
+                <div class="alert alert-warning" role="alert">
+                    {{ messages[0] }}
+                </div>
+            </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+</div>
